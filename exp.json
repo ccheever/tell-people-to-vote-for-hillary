@@ -1,0 +1,21 @@
+{
+  "name": "tell-people-to-vote-to-hillary",
+  "description": "Tell your Facebook friends in the key swing states of Ohio, Pennsylvania, and Florida to vote for Hillary Clinton for President of the United States of America",
+  "slug": "tell-people-to-vote-to-hillary",
+  "sdkVersion": "10.0.0",
+  "version": "1.0.0",
+  "orientation": "portrait",
+  "primaryColor": "#cccccc",
+  "iconUrl": "http://ccheever.com/Exponent/hillary.png",
+  "notification": {
+    "iconUrl": "http://ccheever.com/Exponent/hillary.png",
+    "color": "#000000"
+  },
+  "loading": {
+    "iconUrl": "http://ccheever.com/Exponent/hillary.png",
+    "hideExponentText": false
+  },
+  "packagerOpts": {
+    "assetExts": ["ttf", "png"]
+  }
+}
