@@ -11,10 +11,9 @@ export const StateIcons = {
 };
 
 export const Messages = [
-  `I'm reaching out to friends who live in swing states to remind them to register to vote because your vote counts for a lot. Would you check your registration status at voteplz.org (http://voteplz.org/) before the October 11th deadline passes?
+  `I'm reaching out to friends who live in swing states to remind them to register to vote because your vote counts for a lot. Would you check your registration status at voteplz.org (https://voteplz.org/) before the October 11th deadline passes?
 
 Since this election is so important, I hope you don't mind that I check in again if I don't hear back.`,
 
   `Hi - Just wanted check to see if you're voting for Hillary Clinton in the upcoming election? Since you live in a swing state, your vote counts for a lot. Since this election is so important, I hope you don't mind that I check in again if I don't hear back.`,
-
 ];
