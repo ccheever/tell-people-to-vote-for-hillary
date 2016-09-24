@@ -27,7 +27,7 @@ let {height, width} = Dimensions.get('window');
 export default class HomeScreen extends React.Component {
   static route = {
     navigationBar: {
-      title: 'Vote Plz',
+      title: 'Swing State Friend Finder',
     },
   };
 
