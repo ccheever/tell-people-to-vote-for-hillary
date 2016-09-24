@@ -2,6 +2,7 @@ import React, {
   PropTypes
 } from 'react';
 import {
+  Clipboard,
   DeviceEventEmitter,
   Image,
   Linking,
@@ -75,6 +76,7 @@ export default class RootNavigation extends React.Component {
 
           `;
 
+/*
           injectedJavaScript = `
   require('DOM').listen(document.body, 'click', null, function(e) {
   var target = e.getTarget();
@@ -97,6 +99,7 @@ export default class RootNavigation extends React.Component {
 });
 
           `;
+          */
           return (
             <TabNavigationItem
               key={st}
@@ -114,6 +117,14 @@ export default class RootNavigation extends React.Component {
                   if (result) {
                     let id = result[1];
                     console.log("Opening message thread with " + id);
+
+                    /*
+                    this.props.navigator.showLocalAlert(
+                      `Copied personalized message to clipboard for ` + id,
+                      Alerts.notice
+                    );
+                    */
+
                     Linking.openURL('fb-messenger-public://user-thread/' + id);
                     return false;
                   } else {

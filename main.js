@@ -80,4 +80,7 @@ const styles = StyleSheet.create({
   },
 });
 
+console.disableYellowBox = true; 
+
+
 Exponent.registerRootComponent(AppContainer);

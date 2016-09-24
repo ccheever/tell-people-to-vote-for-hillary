@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Clipboard,
   Dimensions,
   Image,
   Linking,
@@ -13,9 +14,17 @@ import {
   WebView,
 } from 'react-native';
 
+import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
+
 import { MonoText } from '../components/StyledText';
 
 let {height, width} = Dimensions.get('window');
+
+import Alerts from '../constants/Alerts';
+
+import {
+  Messages,
+} from '../Data';
 
 
 let messageToCopy = `
@@ -31,7 +40,19 @@ export default class HomeScreen extends React.Component {
     },
   }
 
+  constructor(props, context) {
+    super(props, context);
+    this.state ={
+      collapseWebView: false,
+    };
+  }
+
+
   render() {
+    let webViewHeight = 300;
+    if (this.state.collapseWebView) {
+      webViewHeight = 0;
+    }
     return (
       <View style={styles.container}>
 
@@ -39,16 +60,32 @@ export default class HomeScreen extends React.Component {
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
 
-          <Text style={{
-              fontSize: 24,
-              justifyContent: 'center',
-              width: width,
-              alignItems: 'center',
-          }}>Login to Facebook (if necessary)</Text>
           <WebView
             source={{uri: 'https://m.facebook.com/login.php'}}
-            style={{marginTop: 3, width: width, height: 300,}}
+            style={{marginTop: 3, width: width, height: webViewHeight,}}
+            onNavigationStateChange={(opts) => {
+              let {url} = opts;
+              if (/login\.php/.exec(url)) {
+                this.setState({collapseWebView: false,});
+              } else {
+                this.setState({collapseWebView: true,});
+              }
+            }}
+
+
           />
+
+        {/*
+        <TouchableBounce onPress={() => {
+            // Somehow send user to http://facebook.com/n/?mid=6e0ddd1G5af3c170a5b3Gbef704G
+        }}>
+          <View style={{
+              backgroundColor: 'blue',
+          }}>
+            <Text>Logout</Text>
+          </View>
+        </TouchableBounce>
+        */}
 
 
 
@@ -87,18 +124,41 @@ export default class HomeScreen extends React.Component {
 
           */}
 
-          <View>
-            <View style={{
-                borderRadius: 6,
-                margin: 6,
-                backgroundColor: '#407AFF',
-                padding: 6,
-            }}>
-              <Text style={{
-                  fontSize: 12,
-                  color: 'white',
-              }}>{messageToCopy}</Text>
-            </View>
+          <View style={{
+              alignItems: 'center',
+          }}>
+              <Text>Tap to copy message to Clipboard</Text>
+              {Messages.map((message) => {
+                return (
+                  <View style={{
+                      borderRadius: 6,
+                      margin: 6,
+                      backgroundColor: '#407AFF',
+                      padding: 6,
+                  }}>
+                    <TouchableBounce onPress={() => {
+                        Clipboard.setString(message);
+                        this.props.navigator.showLocalAlert(
+                          `Copied message to clipboard`,
+                          Alerts.notice
+                        );
+                    }}>
+                      <Text style={{
+                          fontSize: 12,
+                          color: 'white',
+                      }}>{message}</Text>
+                    </TouchableBounce>
+                  </View>
+                );
+              })}
+            <Text style={{
+                marginTop: 15,
+                paddingHorizontal: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+            }}>Then use the tabs below to find friends in swing states to reach out to</Text>
+
             {/*
             <TextInput
               multiline = {true}
