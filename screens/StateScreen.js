@@ -1,30 +1,20 @@
-import React, {
-  PropTypes
-} from 'react';
+import React from 'react';
 import {
-  DeviceEventEmitter,
-  Image,
   Linking,
   StyleSheet,
   View,
   WebView,
 } from 'react-native';
 
-import Alerts from '../constants/Alerts';
-import Colors from '../constants/Colors';
-import Router from '../navigation/Router';
-import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
-
 import {
   FriendsWhoLiveUrls,
-  StateIcons,
 } from '../Data';
 
 const stateNames = {
   FL: 'Florida',
   OH: 'Ohio',
   PA: 'Pennsylvania',
-}
+};
 
 export default class StateScreen extends React.Component {
   static route = {
@@ -33,61 +23,68 @@ export default class StateScreen extends React.Component {
         return `Friends in ${stateNames[params.state]}`;
       },
     },
-  }
+  };
 
   render() {
     let { state } = this.props.route.params;
 
     let injectedJavaScript = `
-      require('DOM').listen(document.body, 'click', null, function(e) {
-      var target = e.getTarget();
-      var link = target.parentNode;
-      var path = link.pathname;
-      if (!path) {
-        return;
-      }
+      requireLazy(['DOM'], function(DOM) {
+        DOM.listen(document.body, 'click', null, function(e) {
+          debugger;
+          var target = e.getTarget();
+          var link = target.parentNode;
+          if (!link.href) {
+            return;
+          }
 
-      var result = /^https:\\/\\/m\\.facebook\\.com\\/messages\\/thread\\/([\\d]+)\\//.exec(href);
-      if (!result) {
-        return;
-      }
+          var matches;
+          if (link.hash.startsWith('#!/')) {
+            matches = /^#!\\/messages\\/thread\\/(\\d+)\\//.exec(link.hash);
+          } else {
+            matches = /^\\/messages\\/thread\\/(\\d+)\\//.exec(link.pathname);
+          }
 
-      e.prevent();
+          if (!matches) {
+            return;
+          }
 
-      var id = result[1];
-      window.location = "#message-" + id;
-      console.log('id is', id);
-    });`
+          e.prevent();
+
+          var id = matches[1];
+          window.location = '#message-' + id;
+        });
+      });
+    `;
 
     return (
       <WebView
         source={{ uri: FriendsWhoLiveUrls[state] }}
-        style={{marginTop: 20}}
+        style={styles.container}
         injectedJavaScript={injectedJavaScript}
-        onNavigationStateChange={(opts) => {
-          // console.log("onNavigationStateChange", opts);
-          let {url} = opts;
-          let result = /https:\/\/m\.facebook\.com\/.*#message-([\d]+)/.exec(url);
-          if (result) {
-            let id = result[1];
-            console.log("Opening message thread with " + id);
-            Linking.openURL('fb-messenger-public://user-thread/' + id);
-            return false;
-          } else {
-            // console.log("Not a message thread");
-          }
-        }}
+        onNavigationStateChange={this._handleNavigationStateChange}
       />
     );
   }
+
+  _handleNavigationStateChange = (event) => {
+    let { url } = event;
+    let matches = /https:\/\/m\.facebook\.com\/.*#message-([\d]+)/.exec(url);
+    if (!matches) {
+      return;
+    }
+
+    let id = matches[1];
+    console.log('Opening message thread with:', id);
+    Linking.openURL('fb-messenger-public://user-thread/' + id).catch(error => {
+      console.warn(error.message);
+    });
+    return false;
+  };
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  selectedTab: {
-    color: Colors.tabIconSelected,
   },
 });
