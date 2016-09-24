@@ -2,7 +2,6 @@ import React, {
   PropTypes
 } from 'react';
 import {
-  Clipboard,
   DeviceEventEmitter,
   Image,
   Linking,
@@ -25,7 +24,6 @@ import Router from '../navigation/Router';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 import {
-  FriendsWhoLiveUrls,
   StateIcons,
 } from '../Data';
 
@@ -41,11 +39,6 @@ export default class RootNavigation extends React.Component {
   }
 
   render() {
-
-    /*
-    injectedJavaScript={"alert('injected');var elts = document.getElementsByTagName('A'); var count = 0; for (var i = 0; i < elts.length; i++) { var elt = elts[i]; var href = elt.href; var result = /^https:\\/\\/m\\.facebook\\.com\\/messages\\/thread\\/([\\d]+)\\//.exec(href); //console.log(href); if (result) { var id = result[1]; elt.href = 'fb-messenger://user/' + id; count++; } }"}
-    */
-
     return (
       <TabNavigation
         tabBarHeight={56}
@@ -56,103 +49,20 @@ export default class RootNavigation extends React.Component {
           <StackNavigation initialRoute={Router.getRoute('home')} />
         </TabNavigationItem>
 
-        {['OH', 'PA', 'FL'].map((st) => {
-
-          let injectedJavaScript = `
-          document.body.scrollTop = 45;
-          window.addEventListener('click', function (e) {
-            var target = e.target;
-            var link = target.parentNode;
-            var href = link.href;
-            var result = /^https:\\/\\/m\\.facebook\\.com\\/messages\\/thread\\/([\\d]+)\\//.exec(href);
-            if (result) {
-               var id = result[1];
-               window.location = "#message-" + id;
-               setTimeout(function () {
-                 window.history.back();
-               }, 100);
-            }
-          });
-
-          `;
-
-/*
-          injectedJavaScript = `
-  require('DOM').listen(document.body, 'click', null, function(e) {
-  var target = e.getTarget();
-  var link = target.parentNode;
-  var path = link.pathname;
-  if (!path) {
-    return;
-  }
-
-  var result = /^https:\\/\\/m\\.facebook\\.com\\/messages\\/thread\\/([\\d]+)\\//.exec(href);
-  if (!result) {
-    return;
-  }
-
-  e.prevent();
-
-  var id = result[1];
-  window.location = "#message-" + id;
-  console.log('id is', id);
-});
-
-          `;
-          */
-          return (
-            <TabNavigationItem
-              key={st}
-              id={st}
-              renderIcon={isSelected => this._renderStateIcon(st, isSelected)}>
-              <WebView
-                source={{uri: FriendsWhoLiveUrls[st]}}
-                style={{marginTop: 20}}
-                injectedJavaScript={injectedJavaScript}
-
-                onNavigationStateChange={(opts) => {
-                  // console.log("onNavigationStateChange", opts);
-                  let {url} = opts;
-                  let result = /https:\/\/m\.facebook\.com\/.*#message-([\d]+)/.exec(url);
-                  if (result) {
-                    let id = result[1];
-                    console.log("Opening message thread with " + id);
-
-                    /*
-                    this.props.navigator.showLocalAlert(
-                      `Copied personalized message to clipboard for ` + id,
-                      Alerts.notice
-                    );
-                    */
-
-                    Linking.openURL('fb-messenger-public://user-thread/' + id);
-                    return false;
-                  } else {
-                    // console.log("Not a message thread");
-                  }
-                }}
-              />
-            </TabNavigationItem>
-          );
-        })}
-
-        {/*
-
-        <TabNavigationItem
-          id="links"
-          renderIcon={isSelected => this._renderIcon('book', isSelected)}>
-          <StackNavigation initialRoute={Router.getRoute('links')} />
-        </TabNavigationItem>
-
-        <TabNavigationItem
-          id="settings"
-          renderIcon={isSelected => this._renderIcon('cog', isSelected)}>
-          <StackNavigation initialRoute={Router.getRoute('settings')} />
-        </TabNavigationItem>
-
-        */}
-
+        {this._renderStateTabItem('OH')}
+        {this._renderStateTabItem('PA')}
+        {this._renderStateTabItem('FL')}
       </TabNavigation>
+    );
+  }
+
+  _renderStateTabItem(state) {
+    return (
+      <TabNavigationItem
+        id={state}
+        renderIcon={isSelected => this._renderStateIcon(state, isSelected)}>
+        <StackNavigation initialRoute={Router.getRoute('state', { state })} />
+      </TabNavigationItem>
     );
   }
 
