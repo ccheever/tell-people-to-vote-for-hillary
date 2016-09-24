@@ -6,6 +6,7 @@ import {
   DeviceEventEmitter,
   Image,
   Linking,
+  Platform,
   StyleSheet,
   View,
   WebView,
@@ -77,28 +78,7 @@ export default class RootNavigation extends React.Component {
           `;
 
 /*
-          injectedJavaScript = `
-  require('DOM').listen(document.body, 'click', null, function(e) {
-  var target = e.getTarget();
-  var link = target.parentNode;
-  var path = link.pathname;
-  if (!path) {
-    return;
-  }
-
-  var result = /^https:\\/\\/m\\.facebook\\.com\\/messages\\/thread\\/([\\d]+)\\//.exec(href);
-  if (!result) {
-    return;
-  }
-
-  e.prevent();
-
-  var id = result[1];
-  window.location = "#message-" + id;
-  console.log('id is', id);
-});
-
-          `;
+          injectedJavaScript =
           */
           return (
             <TabNavigationItem
@@ -125,7 +105,15 @@ export default class RootNavigation extends React.Component {
                     );
                     */
 
-                    Linking.openURL('fb-messenger-public://user-thread/' + id);
+                    if (Platform.OS === 'ios') {
+                      Linking.openURL('fb-messenger-public://user-thread/' + id);
+                    } else if (Platform.OS === 'android') {
+                      Linking.openURL('fb-messenger://user/' + id);
+                      // Linking.openURL('intent://user/' + id + '/#Intent;scheme=fb-messenger;package=com.facebook.orca;end')
+                    } else {
+                      console.log("WUT?");
+                      // Linking.openURL(url);
+                    }
                     return false;
                   } else {
                     // console.log("Not a message thread");
