@@ -4,6 +4,7 @@ import React, {
 import {
   DeviceEventEmitter,
   Image,
+  Linking,
   StyleSheet,
   View,
   WebView,
@@ -39,6 +40,11 @@ export default class RootNavigation extends React.Component {
   }
 
   render() {
+
+    /*
+    injectedJavaScript={"alert('injected');var elts = document.getElementsByTagName('A'); var count = 0; for (var i = 0; i < elts.length; i++) { var elt = elts[i]; var href = elt.href; var result = /^https:\\/\\/m\\.facebook\\.com\\/messages\\/thread\\/([\\d]+)\\//.exec(href); //console.log(href); if (result) { var id = result[1]; elt.href = 'fb-messenger://user/' + id; count++; } }"}
+    */
+
     return (
       <TabNavigation
         tabBarHeight={56}
@@ -50,6 +56,24 @@ export default class RootNavigation extends React.Component {
         </TabNavigationItem>
 
         {['OH', 'PA', 'FL'].map((st) => {
+
+          let injectedJavaScript = `
+          document.body.scrollTop = 45;
+          window.addEventListener('click', function (e) {
+            var target = e.target;
+            var link = target.parentNode;
+            var href = link.href;
+            var result = /^https:\\/\\/m\\.facebook\\.com\\/messages\\/thread\\/([\\d]+)\\//.exec(href);
+            if (result) {
+               var id = result[1];
+               window.location = "#message-" + id;
+               setTimeout(function () {
+                 window.history.back();
+               }, 100);
+            }
+          });
+
+          `;
           return (
             <TabNavigationItem
               key={st}
@@ -58,6 +82,21 @@ export default class RootNavigation extends React.Component {
               <WebView
                 source={{uri: FriendsWhoLiveUrls[st]}}
                 style={{marginTop: 20}}
+                injectedJavaScript={injectedJavaScript}
+
+                onNavigationStateChange={(opts) => {
+                  // console.log("onNavigationStateChange", opts);
+                  let {url} = opts;
+                  let result = /https:\/\/m\.facebook\.com\/.*#message-([\d]+)/.exec(url);
+                  if (result) {
+                    let id = result[1];
+                    console.log("Opening message thread with " + id);
+                    Linking.openURL('fb-messenger-public://user-thread/' + id);
+                    return false;
+                  } else {
+                    // console.log("Not a message thread");
+                  }
+                }}
               />
             </TabNavigationItem>
           );
@@ -78,7 +117,7 @@ export default class RootNavigation extends React.Component {
         </TabNavigationItem>
 
         */}
-        
+
       </TabNavigation>
     );
   }
