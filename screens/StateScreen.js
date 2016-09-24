@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Linking,
+  Platform,
   StyleSheet,
   View,
   WebView,
@@ -51,6 +52,8 @@ export default class StateScreen extends React.Component {
 
           e.prevent();
 
+          target.parentElement.parentElement.parentElement.style.backgroundColor = '#bbbbbb';
+
           var id = matches[1];
           window.location = '#message-' + id;
         });
@@ -76,9 +79,26 @@ export default class StateScreen extends React.Component {
 
     let id = matches[1];
     console.log('Opening message thread with:', id);
-    Linking.openURL('fb-messenger-public://user-thread/' + id).catch(error => {
-      console.warn(error.message);
-    });
+    // Linking.openURL('fb-messenger-public://user-thread/' + id).catch(error => {
+    //   console.warn(error.message);
+    // });
+
+    if (Platform.OS === 'ios') {
+      Linking.openURL('fb-messenger-public://user-thread/' + id).catch(error => {
+        console.warn(error.message);
+      });
+    } else if (Platform.OS === 'android') {
+      Linking.openURL('fb-messenger://user/' + id).catch(error => {
+        console.warn(error.message);
+      });
+      // Linking.openURL('intent://user/' + id + '/#Intent;scheme=fb-messenger;package=com.facebook.orca;end')
+    } else {
+      console.log("WUT?");
+      Linking.openURL(url).catch(error => {
+        console.warn(error.message);
+      });
+    }
+
     return false;
   };
 }
