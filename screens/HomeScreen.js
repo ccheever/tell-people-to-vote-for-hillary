@@ -39,6 +39,18 @@ export default class HomeScreen extends React.Component {
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
 
+          <Text style={{
+              fontSize: 24,
+              justifyContent: 'center',
+              width: width,
+              alignItems: 'center',
+          }}>Login to Facebook (if necessary)</Text>
+          <WebView
+            source={{uri: 'https://m.facebook.com/login.php'}}
+            style={{marginTop: 3, width: width, height: 300,}}
+          />
+
+
 
 {/*
           <View style={styles.welcomeContainer}>
@@ -76,6 +88,18 @@ export default class HomeScreen extends React.Component {
           */}
 
           <View>
+            <View style={{
+                borderRadius: 6,
+                margin: 6,
+                backgroundColor: '#407AFF',
+                padding: 6,
+            }}>
+              <Text style={{
+                  fontSize: 12,
+                  color: 'white',
+              }}>{messageToCopy}</Text>
+            </View>
+            {/*
             <TextInput
               multiline = {true}
               numberOfLines={4}
@@ -89,8 +113,9 @@ export default class HomeScreen extends React.Component {
                 height: height - 100,
               }}
             />
-            <Text></Text>
+            */}
           </View>
+
         </ScrollView>
 
         {/*

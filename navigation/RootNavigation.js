@@ -74,6 +74,29 @@ export default class RootNavigation extends React.Component {
           });
 
           `;
+
+          injectedJavaScript = `
+  require('DOM').listen(document.body, 'click', null, function(e) {
+  var target = e.getTarget();
+  var link = target.parentNode;
+  var path = link.pathname;
+  if (!path) {
+    return;
+  }
+
+  var result = /^https:\\/\\/m\\.facebook\\.com\\/messages\\/thread\\/([\\d]+)\\//.exec(href);
+  if (!result) {
+    return;
+  }
+
+  e.prevent();
+
+  var id = result[1];
+  window.location = "#message-" + id;
+  console.log('id is', id);
+});
+
+          `;
           return (
             <TabNavigationItem
               key={st}
