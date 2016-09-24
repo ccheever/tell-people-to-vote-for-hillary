@@ -87,6 +87,7 @@ export default class HomeScreen extends React.Component {
   _renderMessage(message) {
     return (
       <TouchableBounce
+        key={message}
         onPress={() => {
           Clipboard.setString(message);
           this.props.navigator.showLocalAlert(
